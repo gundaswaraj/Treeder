@@ -4,7 +4,7 @@ var watson 		  = require('watson-developer-cloud');
 var username 	  = 'f931a304-67eb-4213-8d0b-eb6e77ffee8d';
 var password 	  = 'JCSkMhiF1r0u';
 var account_id 	  = 'au9pieloc9sen0';
-var corpus        = 'articles';
+var corpus        = '/articles';
 // corpus path /corpora/{account_id}/{corpus_name}
 //var corpusPath = '/corpora/au9pieloc9sen0/articles';
 
@@ -85,7 +85,7 @@ module.exports = function(Todo) {
 	        	articleObj.parts = parts;
 	        	//console.log(" End Obj : ",  JSON.stringify(articleObj));
 	        	var newDocument = {
-			        id: '/corpora/' + account_id  + '/' + corpus + '/documents/' + articleObj.label,
+			        id: '/corpora/' + account_id  + corpus + '/documents/' + articleObj.label,
 			        document: articleObj
 			      };
 			      //var corpusPath = '/corpora/au9pieloc9sen0/articles';
@@ -133,11 +133,15 @@ module.exports = function(Todo) {
 	});
 
 	Todo.getConcepts = function(cb) {
-
-		var concept  =  {"content":"paris","id":38,"count":14};
-		var concept2 =  {"content":"paris2","id":38,"count":14};
-	 	var conceptArray = [concept, concept2];
-      	cb(null, conceptArray);
+		conceptInsights.corpora.getCorpusStats(
+			{corpus: '/corpora/' + account_id  + '/' + corpus}, function(err, res) {
+			if (err){
+				return console.log(err);
+			}
+		    var conceptArray = res.top_tags.tags;
+		    console.log(conceptArray);
+		    cb(null, conceptArray);
+		});
     }
 
     Todo.remoteMethod(
