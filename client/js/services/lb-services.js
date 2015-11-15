@@ -1341,7 +1341,17 @@ module.factory(
 
         
         "getConcepts": {
-          url: urlBase + "/Todos/getConcepts",
+          url: urlBase + "/Todos/getConcepts/",
+          method: "GET"
+        },
+
+        
+        "getDetails": {
+          url: urlBase + "/Todos/getDetails/",
+          method: "GET"
+        },
+        "playArticle": {
+          url: urlBase + "/Todos/playArticle/",
           method: "GET"
         },
         /**

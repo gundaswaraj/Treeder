@@ -1,6 +1,10 @@
 var fetch 		  = require('node-fetch');
 var htmlparser 	  = require("htmlparser2");
+var fs 			  = require('fs');
 var watson 		  = require('watson-developer-cloud');
+var ogg           = require('ogg');
+var opus 		  = require('node-opus');
+var Speaker       = require('speaker');
 var username 	  = 'f931a304-67eb-4213-8d0b-eb6e77ffee8d';
 var password 	  = 'JCSkMhiF1r0u';
 var account_id 	  = 'au9pieloc9sen0';
@@ -23,6 +27,12 @@ module.exports = function(Todo) {
 	    username: username,
 	    password: password,
 	    version: 'v2'
+	});
+
+	var text_to_speech = watson.text_to_speech({
+	  username: username,
+	  password: password,
+	  version: 'v1'
 	});
 
 	var parser = new htmlparser.Parser({
@@ -85,10 +95,11 @@ module.exports = function(Todo) {
 	        	articleObj.parts = parts;
 	        	//console.log(" End Obj : ",  JSON.stringify(articleObj));
 	        	var newDocument = {
-			        id: '/corpora/' + account_id  + corpus + '/documents/' + articleObj.label,
+			        id: '/corpora/' + account_id  + corpus + '/documents/' + articleId,
 			        document: articleObj
-			      };
-			      //var corpusPath = '/corpora/au9pieloc9sen0/articles';
+			    };
+			    
+			    //var corpusPath = '/corpora/au9pieloc9sen0/articles';
 	        	conceptInsights.corpora.createDocument(newDocument, function(err) {
 		       		if (err){
 		         		return console.log(err);
@@ -116,7 +127,7 @@ module.exports = function(Todo) {
 	Todo.observe('after save', function updateTimestamp(ctx, next) {
 	  if (ctx.instance) {
 	    articleURL =  ctx.instance.content;
-
+	    articleId  =  ctx.instance.id
 	    fetch(articleURL)
 		    .then(function(res) {
 		    	//console.log(res.text());
@@ -134,14 +145,62 @@ module.exports = function(Todo) {
 
 	Todo.getConcepts = function(cb) {
 		conceptInsights.corpora.getCorpusStats(
-			{corpus: '/corpora/' + account_id  + '/' + corpus}, function(err, res) {
+			{corpus: '/corpora/' + account_id  +  corpus}, function(err, res) {
 			if (err){
 				return console.log(err);
 			}
 		    var conceptArray = res.top_tags.tags;
-		    console.log(conceptArray);
+		    //console.log(conceptArray);
 		    cb(null, conceptArray);
 		});
+    }
+
+
+    Todo.getDetails = function(concept,cb) {
+    	//console.log("concept :: "  , concept);
+		conceptInsights.corpora.getRelatedDocuments(
+			{	ids  : [concept],
+				corpus: '/corpora/' + account_id  + '/' + corpus
+			
+			}, function(err, res) {
+			if (err){
+				return console.log(err);
+			}
+		 	cb(null,res);
+
+		});
+    }
+
+    Todo.playArticle = function(id,cb) {
+    	console.log("id :: "  , id);
+
+		// conceptInsights.corpora.getRelatedDocuments(
+		// 	{	ids  : [concept],
+		// 		corpus: '/corpora/' + account_id  + '/' + corpus
+			
+		// 	}, function(err, res) {
+		// 	if (err){
+		// 		return console.log(err);
+		// 	}
+		//  	cb(null,res);
+
+		// });
+
+		var params = {
+		  text: 'Hello from IBM Watson',
+		  voice: 'en-US_MichaelVoice', // Optional voice 
+		  accept: 'audio/ogg; codec=opus'
+		};
+ 
+		// Pipe the synthesized text to a file 
+		//text_to_speech.synthesize(params).pipe(fs.createWriteStream('output.wav'));
+		text_to_speech.synthesize(params)
+		    .pipe(new ogg.Decoder())
+		    .on('stream', function (opusStream) {
+		        opusStream.pipe(new opus.Decoder())
+		            .pipe(new Speaker());
+		});
+		cb(null,"Sucess");
     }
 
     Todo.remoteMethod(
@@ -149,6 +208,24 @@ module.exports = function(Todo) {
         {
           http: {path: '/getConcepts', verb: 'get'},
           returns: {arg: 'concepts', type: 'array'}
+        }
+    );
+
+    Todo.remoteMethod(
+        'getDetails',
+        {
+          accepts: {arg: 'concept', type: 'string'},
+          http: {path: '/getDetails', verb: 'get'},
+          returns: {arg: 'articles', type: 'object'}
+        }
+    );
+
+    Todo.remoteMethod(
+        'playArticle',
+        {
+          accepts: {arg: 'id', type: 'string'},
+          http: {path: '/playArticle', verb: 'get'},
+          returns: {arg: 'id', type: 'object'}
         }
     );
 

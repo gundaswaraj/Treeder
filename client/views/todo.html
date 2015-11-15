@@ -21,9 +21,9 @@
         ng-click="removeTodo(todo)"></i></a>
 </div> -->
 
-<div class="masthead clearfix">
+<div class="navbar navbar-inverse clearfix">
   <div class="inner">
-    <h3 class="masthead-brand">Article Reader</h3>
+    <h3 class="masthead-brand">Treeder</h3>
     <nav>
       <ul class="nav masthead-nav">
         <li class="active"><a href="#">Home</a></li>
@@ -55,7 +55,11 @@
     <i class="glyphicon glyphicon-remove pull-right"
         ng-click="removeTodo(todo)"></i>
   </a> -->
-  <button class="btn btn-primary btn-lg" type="button" ng-repeat="todo in todos">
+  <button class="btn btn-primary btn-lg" type="button" ng-repeat="todo in todos" ng-click="getDetails(todo)">
         {{todo.concept.substring(todo.concept.lastIndexOf('/') + 1, todo.concept.length)}} <span class="badge">{{todo.count}}</span>
 </button>
+<a class="list-group-item" ng-repeat="article in articles">{{article.label}}&nbsp;
+    <i class="glyphicon glyphicon-play pull-right"
+        ng-click="playArticle(article)"></i>
+</a> 
 </div>
