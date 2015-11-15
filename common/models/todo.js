@@ -1,5 +1,12 @@
-var fetch = require('node-fetch');
-var htmlparser = require("htmlparser2");
+var fetch 		  = require('node-fetch');
+var htmlparser 	  = require("htmlparser2");
+var watson 		  = require('watson-developer-cloud');
+var username 	  = 'f931a304-67eb-4213-8d0b-eb6e77ffee8d';
+var password 	  = 'JCSkMhiF1r0u';
+var account_id 	  = 'au9pieloc9sen0';
+var corpus        = 'articles';
+// corpus path /corpora/{account_id}/{corpus_name}
+//var corpusPath = '/corpora/au9pieloc9sen0/articles';
 
 module.exports = function(Todo) {
 
@@ -12,9 +19,15 @@ module.exports = function(Todo) {
 	var part  = {};
 	var data  = "";
 
+	var conceptInsights = watson.concept_insights({
+	    username: username,
+	    password: password,
+	    version: 'v2'
+	});
+
 	var parser = new htmlparser.Parser({
 	    onopentag: function(name, attribs){
-	    	
+
 	    	if(name === "h1"){
 	    		console.log("header Beign");
 	    		isArticleHeader = true;
@@ -30,10 +43,10 @@ module.exports = function(Todo) {
 	        if(name === "p"){
 	            isText = true;
 	        }
-		    
+
 	    },
 	    ontext: function(text){
-	    	
+
 	    	if(isArticleHeader === true){
 	    		articleObj.label = text;
 	    		part.name = text;
@@ -54,30 +67,55 @@ module.exports = function(Todo) {
 	    		}
 	    		part.data = part.data + text;
 	    	}
-		
+
 	    },
 	    onclosetag: function(tagname){
-	        
+
 	    	if(tagname === "h1"){
 	    		isArticleHeader = false;
 	    	}
 	    	if(tagname === "h2"){
 	    		isArticleSubHeader = false;
-	    		
+
 	    	}
 	        if(tagname === "p"){
 	            isText = false;
 	        }
 	        if(tagname === "html"){
 	        	articleObj.parts = parts;
-	        	console.log(" End Obj : ",  JSON.stringify(articleObj));
-	        }
+	        	//console.log(" End Obj : ",  JSON.stringify(articleObj));
+	        	var newDocument = {
+			        id: '/corpora/' + account_id  + '/' + corpus + '/documents/' + articleObj.label,
+			        document: articleObj
+			      };
+			      //var corpusPath = '/corpora/au9pieloc9sen0/articles';
+	        	conceptInsights.corpora.createDocument(newDocument, function(err) {
+		       		if (err){
+		         		return console.log(err);
+		         	}
+		      		console.log('document created:', newDocument);
+		      	});
+
+		      //
+		      //
+		      // conceptInsights.accounts.getAccountsInfo(null, function  (err,result) {
+        //       	console.log(result);
+        //   	   });
+
+        //     conceptInsights.corpora.listCorpora(null, function  (err,result) {
+        //       console.log(result);
+        //     });
+
+
+
+
+          }
 	    }
 	}, {decodeEntities: true});
-	
+
 	Todo.observe('after save', function updateTimestamp(ctx, next) {
 	  if (ctx.instance) {
-	    var articleURL =  ctx.instance.content;
+	    articleURL =  ctx.instance.content;
 
 	    fetch(articleURL)
 		    .then(function(res) {
@@ -101,13 +139,13 @@ module.exports = function(Todo) {
 	 	var conceptArray = [concept, concept2];
       	cb(null, conceptArray);
     }
-     
+
     Todo.remoteMethod(
-        'getConcepts', 
+        'getConcepts',
         {
           http: {path: '/getConcepts', verb: 'get'},
           returns: {arg: 'concepts', type: 'array'}
         }
-    ); 
+    );
 
 };
