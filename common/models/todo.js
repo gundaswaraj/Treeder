@@ -30,8 +30,8 @@ module.exports = function(Todo) {
 	});
 
 	var text_to_speech = watson.text_to_speech({
-	  username: username,
-	  password: password,
+	  username: 'fcd4d836-d525-4928-8a19-f7c4a7f07913',
+	  password: 'wHOkqgFH9nZE',
 	  version: 'v1'
 	});
 
@@ -62,7 +62,8 @@ module.exports = function(Todo) {
 	    		part.name = text;
 	    	}
 	    	if(isArticleSubHeader === true){
-	    		if(text === "\t" || text === "Featured Stories" || text === " Startups" || text === "Latest From"){
+	    		// if(text === "\t" || text === "Featured Stories" || text === " Startups" || text === "Latest From"){
+	    		if(text.matches(/[\n\t\r]|^\s|featured|startups|latest from|contents|references|see also/i)){
 	    			isArticleSubHeader = false;
 	    			parts[parts.length - 1].data =  parts[parts.length - 1].data + text;
 	    		}else{
@@ -173,7 +174,13 @@ module.exports = function(Todo) {
 
     Todo.playArticle = function(id,cb) {
     	console.log("id :: "  , id);
+    	var objectId = id.substring(id.lastIndexOf('/') + 1, id.length)
 
+    	console.log("Object Id:" , objectId);
+    	Todo.findById(objectId, function(err, instance){
+
+    		console.log(" URL " + instance.content);
+    	});
 		// conceptInsights.corpora.getRelatedDocuments(
 		// 	{	ids  : [concept],
 		// 		corpus: '/corpora/' + account_id  + '/' + corpus
