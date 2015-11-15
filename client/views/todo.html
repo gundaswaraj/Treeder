@@ -1,0 +1,72 @@
+<!-- <h1>Articles</h1>
+<hr>
+<form name="todoForm" novalidate ng-submit="addTodo()">
+  <div class="form-group"
+      ng-class="{'has-error': todoForm.content.$invalid
+        && todoForm.content.$dirty}">
+    <input type="text" class="form-control focus" name="content"
+        placeholder="URL" autocomplete="off" required
+        ng-model="newTodo.content">
+    <span class="has-error control-label" ng-show="
+        todoForm.content.$invalid && todoForm.content.$dirty">
+      URL is required.
+    </span>
+  </div>
+  <button class="btn btn-default" ng-disabled="todoForm.$invalid">Add</button>
+</form>
+<hr>
+<div class="list-group">
+  <a class="list-group-item" ng-repeat="todo in todos">{{todo.content}}&nbsp;
+    <i class="glyphicon glyphicon-remove pull-right"
+        ng-click="removeTodo(todo)"></i></a>
+</div> -->
+
+<div class="masthead clearfix">
+  <div class="inner">
+    <h3 class="masthead-brand">Article Reader</h3>
+    <nav>
+      <ul class="nav masthead-nav">
+        <li class="active"><a href="#">Home</a></li>
+        <li><a href="#">My List</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<!-- <div class="inner cover">
+  <h1 class="cover-heading">Add the Articles below :</h1>
+  <form>
+    <div class="form-group">
+      <br><input type="text" class="form-control" id="urllink" placeholder="URL"><br>
+    </div>
+   <button type="submit" class="btn btn-default" onclick="uploadArticle()">Submit</button>
+  </form>
+  <!-- <p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.</p>
+  <p class="lead">
+    <a href="#" class="btn btn-lg btn-default">Learn more</a>
+  </p> 
+</div-->
+<h1>Articles</h1>
+<hr>
+<form name="todoForm" novalidate ng-submit="addTodo()">
+  <div class="form-group"
+      ng-class="{'has-error': todoForm.content.$invalid
+        && todoForm.content.$dirty}">
+    <input type="text" class="form-control focus" name="content"
+        placeholder="URL" autocomplete="off" required
+        ng-model="newTodo.content">
+    <span class="has-error control-label" ng-show="
+        todoForm.content.$invalid && todoForm.content.$dirty">
+      URL is required.
+    </span>
+  </div>
+  <button class="btn btn-default" ng-disabled="todoForm.$invalid">Add</button>
+</form>
+<hr>
+<div class="list-group">
+  <a class="list-group-item" ng-repeat="todo in todos">{{todo.content}}&nbsp;
+    <i class="glyphicon glyphicon-remove pull-right"
+        ng-click="removeTodo(todo)"></i>
+  </a>
+</div>
