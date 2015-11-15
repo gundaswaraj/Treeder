@@ -10,9 +10,23 @@ angular
         .$promise
         .then(function(results) {
           $scope.todos = results;
+          alert(" Result " + JSON.stringify(results));
         });
     }
-    getTodos();
+    //getTodos();
+
+    getConcepts();
+
+    function getConcepts() {
+
+       Todo
+        .getConcepts()
+        .$promise
+        .then(function(results) {
+          $scope.todos = results.concepts;
+          //alert(" Result " + JSON.stringify(results));
+        });
+    }
 
     $scope.addTodo = function() {
       Todo
@@ -22,7 +36,8 @@ angular
           $scope.newTodo = '';
           $scope.todoForm.content.$setPristine();
           $('.focus').focus();
-          getTodos();
+          //getTodos();
+          getConcepts();
         });
     };
 
@@ -31,7 +46,8 @@ angular
         .deleteById(item)
         .$promise
         .then(function() {
-          getTodos();
+          //getTodos();
+          getConcepts();
         });
     };
   }]);

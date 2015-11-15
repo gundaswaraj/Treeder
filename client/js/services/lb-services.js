@@ -1339,6 +1339,11 @@ module.factory(
           method: "GET"
         },
 
+        
+        "getConcepts": {
+          url: urlBase + "/Todos/getConcepts",
+          method: "GET"
+        },
         /**
          * @ngdoc method
          * @name lbServices.Todo#prototype$updateAttributes
